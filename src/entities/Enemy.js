@@ -121,8 +121,9 @@ class EnemyInstance {
     this.group.visible = false;
     scene.add(this.group);
 
-    // Body mesh - will be reconfigured per type
-    this.bodyGeo = new THREE.OctahedronGeometry(0.5, 0);
+    // Body mesh - pre-allocate both geometry types for reuse
+    this.droneGeo = new THREE.OctahedronGeometry(0.5, 0);
+    this.soldierGeo = new THREE.DodecahedronGeometry(0.5, 0);
     this.bodyMat = new THREE.MeshStandardMaterial({
       color: 0x44ff44,
       emissive: 0x22aa22,
@@ -130,7 +131,7 @@ class EnemyInstance {
       metalness: 0.5,
       roughness: 0.4,
     });
-    this.body = new THREE.Mesh(this.bodyGeo, this.bodyMat);
+    this.body = new THREE.Mesh(this.droneGeo, this.bodyMat);
     this.group.add(this.body);
 
     // Glow
@@ -160,6 +161,10 @@ class EnemyInstance {
 
     this._origColor = new THREE.Color();
     this._origEmissive = new THREE.Color();
+
+    // Pre-allocated scratch vectors to avoid per-frame allocations
+    this._toPlayer = new THREE.Vector3();
+    this._strafeVec = new THREE.Vector3();
   }
 
   activate(type, config, position) {
@@ -189,18 +194,10 @@ class EnemyInstance {
     this.light.color.set(config.color);
 
     const s = config.size;
-    this.body.scale.setScalar(s);
 
-    // Different geometry per type
-    this.group.remove(this.body);
-    if (type === 'soldier') {
-      this.bodyGeo = new THREE.DodecahedronGeometry(0.5, 0);
-    } else {
-      this.bodyGeo = new THREE.OctahedronGeometry(0.5, 0);
-    }
-    this.body = new THREE.Mesh(this.bodyGeo, this.bodyMat);
+    // Different geometry per type - reuse pre-allocated geometries
+    this.body.geometry = (type === 'soldier') ? this.soldierGeo : this.droneGeo;
     this.body.scale.setScalar(s);
-    this.group.add(this.body);
 
     this.group.position.copy(this.position);
     this.group.visible = true;
@@ -278,7 +275,7 @@ class EnemyInstance {
 
   _updateApproaching(dt, playerPos) {
     if (!playerPos) return;
-    const toPlayer = new THREE.Vector3().subVectors(playerPos, this.position);
+    const toPlayer = this._toPlayer.subVectors(playerPos, this.position);
     toPlayer.y = 0;
     const dist = toPlayer.length();
 
@@ -294,7 +291,7 @@ class EnemyInstance {
   _updateAttacking(dt, playerPos, projectilePool, audio) {
     if (!playerPos) return;
 
-    const toPlayer = new THREE.Vector3().subVectors(playerPos, this.position);
+    const toPlayer = this._toPlayer.subVectors(playerPos, this.position);
     toPlayer.y = 0;
     const dist = toPlayer.length();
 
@@ -311,12 +308,12 @@ class EnemyInstance {
   _updateStrafing(dt, playerPos, projectilePool, audio) {
     if (!playerPos) return;
 
-    const toPlayer = new THREE.Vector3().subVectors(playerPos, this.position);
+    const toPlayer = this._toPlayer.subVectors(playerPos, this.position);
     toPlayer.y = 0;
     const dist = toPlayer.length();
 
     // Strafe perpendicular to player
-    const strafeVec = new THREE.Vector3(-toPlayer.z, 0, toPlayer.x).normalize();
+    const strafeVec = this._strafeVec.set(-toPlayer.z, 0, toPlayer.x).normalize();
     this.position.addScaledVector(strafeVec, this.strafeDir * this.config.speed * 0.7 * dt);
 
     // Maintain distance
@@ -371,7 +368,7 @@ class EnemyInstance {
   }
 
   _fireProjectile(playerPos, projectilePool, audio) {
-    const dir = new THREE.Vector3().subVectors(playerPos, this.position).normalize();
+    const dir = this._toPlayer.subVectors(playerPos, this.position).normalize();
     // Add some inaccuracy
     dir.x += (Math.random() - 0.5) * 0.15;
     dir.y += (Math.random() - 0.5) * 0.1;

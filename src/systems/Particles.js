@@ -6,6 +6,7 @@ export class Particles {
   constructor(scene) {
     this.scene = scene;
     this.particles = [];
+    this.activePopups = [];
 
     // Pre-create particle pool
     for (let i = 0; i < MAX_PARTICLES; i++) {
@@ -112,26 +113,28 @@ export class Particles {
     sprite.scale.set(1.5, 0.75, 1);
     this.scene.add(sprite);
 
-    // Animate and remove
-    const startTime = Date.now();
-    const animate = () => {
-      const elapsed = (Date.now() - startTime) / 1000;
-      if (elapsed > 1) {
-        this.scene.remove(sprite);
-        texture.dispose();
-        mat.dispose();
-        return;
-      }
-      sprite.position.y += 0.02;
-      mat.opacity = 1 - elapsed;
-      requestAnimationFrame(animate);
-    };
-    animate();
+    // Track popup for update in main game loop instead of a separate RAF loop
+    this.activePopups.push({ sprite, mat, texture, elapsed: 0 });
   }
 
   update(dt) {
     for (const p of this.particles) {
       if (p.active) p.update(dt);
+    }
+
+    // Animate score popups in the main game loop instead of separate RAF loops
+    for (let i = this.activePopups.length - 1; i >= 0; i--) {
+      const popup = this.activePopups[i];
+      popup.elapsed += dt;
+      if (popup.elapsed >= 1) {
+        this.scene.remove(popup.sprite);
+        popup.texture.dispose();
+        popup.mat.dispose();
+        this.activePopups.splice(i, 1);
+      } else {
+        popup.sprite.position.y += 0.02 * dt * 60;
+        popup.mat.opacity = 1 - popup.elapsed;
+      }
     }
   }
 
@@ -139,6 +142,12 @@ export class Particles {
     for (const p of this.particles) {
       if (p.active) p.deactivate();
     }
+    for (const popup of this.activePopups) {
+      this.scene.remove(popup.sprite);
+      popup.texture.dispose();
+      popup.mat.dispose();
+    }
+    this.activePopups.length = 0;
   }
 }
 
