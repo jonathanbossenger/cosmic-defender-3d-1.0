@@ -167,7 +167,6 @@ class EnemyInstance {
     // Pre-allocated scratch vectors to avoid per-frame allocations
     this._toPlayer = new THREE.Vector3();
     this._strafeVec = new THREE.Vector3();
-    this._fireDirection = new THREE.Vector3();
   }
 
   activate(type, config, position) {
@@ -197,14 +196,13 @@ class EnemyInstance {
     this.light.color.set(config.color);
 
     const s = config.size;
+
+    // Different geometry per type - reuse pre-allocated geometries
+    this.body.geometry = (type === 'soldier') ? this.soldierGeo : this.droneGeo;
     this.body.scale.setScalar(s);
     const sizeScale = s / BASE_ENEMY_SIZE;
     this.eye.scale.setScalar(sizeScale);
     this.eye.position.z = BASE_EYE_Z_OFFSET * sizeScale;
-
-    // Different geometry per type - reuse pre-allocated geometries
-    this.body.geometry = type === 'soldier' ? this.soldierGeo : this.droneGeo;
-    this.body.scale.setScalar(s);
 
     this.group.position.copy(this.position);
     this.group.visible = true;
@@ -375,7 +373,7 @@ class EnemyInstance {
   }
 
   _fireProjectile(playerPos, projectilePool, audio) {
-    const dir = this._fireDirection.subVectors(playerPos, this.position).normalize();
+    const dir = this._toPlayer.subVectors(playerPos, this.position).normalize();
     // Add some inaccuracy
     dir.x += (Math.random() - 0.5) * 0.15;
     dir.y += (Math.random() - 0.5) * 0.1;
