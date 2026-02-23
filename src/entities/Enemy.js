@@ -20,7 +20,7 @@ export const ENEMY_TYPES = {
     projectileSpeed: 15,
     color: 0x44ff44,
     emissive: 0x22aa22,
-    size: 0.5,
+    size: 0.75,
     attackRange: 20,
     preferredRange: 12,
   },
@@ -33,7 +33,7 @@ export const ENEMY_TYPES = {
     projectileSpeed: 18,
     color: 0x4488ff,
     emissive: 0x2244aa,
-    size: 0.6,
+    size: 0.95,
     attackRange: 22,
     preferredRange: 10,
     burstCount: 3,
@@ -42,6 +42,8 @@ export const ENEMY_TYPES = {
 };
 
 const POOL_SIZE = 40;
+const BASE_ENEMY_SIZE = 0.5; // Original geometry scale used for eye proportions
+const BASE_EYE_Z_OFFSET = 0.4;
 
 export class EnemyManager {
   constructor(scene) {
@@ -202,6 +204,10 @@ class EnemyInstance {
     this.group.position.copy(this.position);
     this.group.visible = true;
     this.group.scale.setScalar(0.01);
+
+    const sizeScale = s / BASE_ENEMY_SIZE;
+    this.eye.scale.setScalar(sizeScale);
+    this.eye.position.z = BASE_EYE_Z_OFFSET * sizeScale;
   }
 
   update(dt, playerPos, projectilePool, audio) {
