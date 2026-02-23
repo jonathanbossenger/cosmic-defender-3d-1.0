@@ -71,6 +71,7 @@ export class Game {
     this.projectiles = new ProjectilePool(this.scene);
     this.enemies = new EnemyManager(this.scene);
     this.arena = new Arena(this.scene);
+    this.player.coverObjects = this.arena.coverObjects;
     this.waveManager = new WaveManager(this.enemies);
     this.combat = new Combat();
     this.particles = new Particles(this.scene);
