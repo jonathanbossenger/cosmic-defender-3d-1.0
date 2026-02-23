@@ -161,6 +161,9 @@ export class Player {
 
   _resolveCoverCollisions() {
     for (const obs of this.coverObjects) {
+      // Skip if the player's feet are above this obstacle (jumped over it)
+      if (obs.maxY !== undefined && this.position.y - EYE_HEIGHT >= obs.maxY) continue;
+
       const dx = this.position.x - obs.x;
       const dz = this.position.z - obs.z;
 
