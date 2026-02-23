@@ -15,6 +15,8 @@ export class HUD {
       waveAnnounce: document.getElementById('wave-announce'),
       waveAnnounceNum: document.getElementById('wave-announce-num'),
       waveAnnounceSub: document.getElementById('wave-announce-sub'),
+      reloadBar: document.getElementById('reload-bar'),
+      reloadFill: document.getElementById('reload-fill'),
     };
 
     this.hitMarkerTimer = 0;
@@ -52,9 +54,13 @@ export class HUD {
     if (state.reloading) {
       ammoEl.textContent = 'RELOADING';
       ammoEl.className = 'ammo-count reloading';
+      this.el.reloadBar.classList.add('visible');
+      this.el.reloadFill.style.width = (state.reloadProgress * 100) + '%';
     } else {
       ammoEl.textContent = state.ammo;
       ammoEl.className = 'ammo-count' + (state.ammo <= 5 ? ' low' : '');
+      this.el.reloadBar.classList.remove('visible');
+      this.el.reloadFill.style.width = '0%';
     }
 
     // Score (animated)

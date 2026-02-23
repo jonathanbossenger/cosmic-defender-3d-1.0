@@ -67,6 +67,7 @@ export class Game {
     // Game objects
     this.player = new Player(this.camera);
     this.weapon = new Weapon(this.scene, this.camera);
+    this.weapon._audio = this.audio;
     this.weapon.attachToCamera(this.camera);
     this.projectiles = new ProjectilePool(this.scene);
     this.enemies = new EnemyManager(this.scene);
@@ -321,6 +322,7 @@ export class Game {
       maxShield: this.player.maxShield,
       ammo: this.weapon.ammo,
       reloading: this.weapon.reloading,
+      reloadProgress: this.weapon.reloading ? 1 - (this.weapon.reloadTimer / this.weapon.reloadTime) : 0,
       score: this.combat.score,
       wave: this.waveManager.wave,
       combo: this.combat.combo,

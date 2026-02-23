@@ -15,6 +15,7 @@ export class Weapon {
     this.fireCooldown = 0;
     this.reloading = false;
     this.reloadTimer = 0;
+    this._audio = null;
 
     // Stats
     this.shotsFired = 0;
@@ -95,6 +96,7 @@ export class Weapon {
       if (this.reloadTimer <= 0) {
         this.ammo = this.magazineSize;
         this.reloading = false;
+        if (this._audio) this._audio.playReloadComplete();
       }
     }
 
@@ -111,8 +113,15 @@ export class Weapon {
     if (this.weaponKickback < 0.001) this.weaponKickback = 0;
 
     // Apply weapon animations
-    this.weaponModel.position.z = -0.3 + this.weaponKickback * 0.05;
+    let reloadDropY = 0, reloadTiltZ = 0;
+    if (this.reloading) {
+      const progress = 1 - this.reloadTimer / this.reloadTime;
+      reloadDropY = Math.sin(progress * Math.PI) * 0.15;
+      reloadTiltZ = Math.sin(progress * Math.PI) * 0.4;
+    }
+    this.weaponModel.position.set(0.25, -0.2 - reloadDropY, -0.3 + this.weaponKickback * 0.05);
     this.weaponModel.rotation.x = -this.weaponKickback * 0.1;
+    this.weaponModel.rotation.z = reloadTiltZ;
   }
 
   canFire() {
@@ -133,7 +142,7 @@ export class Weapon {
 
     // Auto-reload on empty
     if (this.ammo <= 0) {
-      this.startReload();
+      this.startReload(this._audio);
     }
 
     // Return projectile spawn info
@@ -153,6 +162,7 @@ export class Weapon {
     if (this.reloading || this.ammo === this.magazineSize) return false;
     this.reloading = true;
     this.reloadTimer = this.reloadTime;
+    this._audio = audio || null;
     if (audio) audio.playReload();
     return true;
   }
