@@ -200,13 +200,14 @@ class EnemyInstance {
     // Different geometry per type - reuse pre-allocated geometries
     this.body.geometry = (type === 'soldier') ? this.soldierGeo : this.droneGeo;
     this.body.scale.setScalar(s);
-    const sizeScale = s / BASE_ENEMY_SIZE;
-    this.eye.scale.setScalar(sizeScale);
-    this.eye.position.z = BASE_EYE_Z_OFFSET * sizeScale;
 
     this.group.position.copy(this.position);
     this.group.visible = true;
     this.group.scale.setScalar(0.01);
+
+    const sizeScale = s / BASE_ENEMY_SIZE;
+    this.eye.scale.setScalar(sizeScale);
+    this.eye.position.z = BASE_EYE_Z_OFFSET * sizeScale;
   }
 
   update(dt, playerPos, projectilePool, audio) {
