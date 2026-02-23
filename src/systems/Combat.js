@@ -71,6 +71,35 @@ export class Combat {
     return hits;
   }
 
+  // Check enemy projectiles against solid cover obstacles
+  checkObstacleProjectiles(projectiles, coverObjects, particles) {
+    for (const proj of projectiles) {
+      if (!proj.active || proj.isPlayer) continue;
+
+      for (const obs of coverObjects) {
+        if (proj.position.y < 0 || proj.position.y > obs.maxY) continue;
+
+        const dx = proj.position.x - obs.x;
+        const dz = proj.position.z - obs.z;
+        let hit = false;
+
+        if (obs.type === 'cylinder') {
+          hit = (dx * dx + dz * dz) < obs.radius * obs.radius;
+        } else {
+          const lx = dx * obs.cosR - dz * obs.sinR;
+          const lz = dx * obs.sinR + dz * obs.cosR;
+          hit = Math.abs(lx) < obs.hw && Math.abs(lz) < obs.hd;
+        }
+
+        if (hit) {
+          if (particles) particles.spawnExplosion(proj.position.clone(), 0xff4400);
+          proj.deactivate();
+          break;
+        }
+      }
+    }
+  }
+
   // Check enemy projectiles against player
   checkEnemyProjectiles(projectiles, player) {
     if (!player.alive) return false;

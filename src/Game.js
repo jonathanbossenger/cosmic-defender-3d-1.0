@@ -270,6 +270,13 @@ export class Game {
       }
     }
 
+    // Enemy projectile vs obstacles (blocks shots; must run before vs-player check)
+    this.combat.checkObstacleProjectiles(
+      this.projectiles.getActive(),
+      this.arena.coverObjects,
+      this.particles,
+    );
+
     // Enemy projectile vs player
     const playerHit = this.combat.checkEnemyProjectiles(
       this.projectiles.getActive(),
