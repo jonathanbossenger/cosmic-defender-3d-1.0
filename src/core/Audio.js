@@ -134,6 +134,47 @@ export class Audio {
     osc.stop(t + 0.2);
   }
 
+  // Reload complete - magazine locked in
+  playReloadComplete() {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+
+    // Sharp mechanical click
+    const bufferSize = Math.floor(this.ctx.sampleRate * 0.04);
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 3);
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 2500;
+    filter.Q.value = 2;
+    const noiseGain = this.ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.25, t);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+    noise.connect(filter);
+    filter.connect(noiseGain);
+    noiseGain.connect(this.sfxGain);
+    noise.start(t);
+    noise.stop(t + 0.04);
+
+    // Rising confirmation tone
+    const osc = this.ctx.createOscillator();
+    const oscGain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(500, t + 0.02);
+    osc.frequency.exponentialRampToValueAtTime(1000, t + 0.15);
+    oscGain.gain.setValueAtTime(0.12, t + 0.02);
+    oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+    osc.connect(oscGain);
+    oscGain.connect(this.sfxGain);
+    osc.start(t + 0.02);
+    osc.stop(t + 0.2);
+  }
+
   // Reload sound
   playReload() {
     if (!this.ctx) return;
