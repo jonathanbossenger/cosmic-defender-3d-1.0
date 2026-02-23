@@ -129,16 +129,12 @@ class EnemyInstance {
     this.bodyMat = new THREE.MeshStandardMaterial({
       color: 0x44ff44,
       emissive: 0x22aa22,
-      emissiveIntensity: 0.3,
+      emissiveIntensity: 0.6,
       metalness: 0.5,
       roughness: 0.4,
     });
     this.body = new THREE.Mesh(this.droneGeo, this.bodyMat);
     this.group.add(this.body);
-
-    // Glow
-    this.light = new THREE.PointLight(0x44ff44, 0.3, 6);
-    this.group.add(this.light);
 
     // Health bar
     const hbGeo = new THREE.PlaneGeometry(0.8, 0.06);
@@ -193,7 +189,6 @@ class EnemyInstance {
     this.bodyMat.emissive.set(config.emissive);
     this._origColor.set(config.color);
     this._origEmissive.set(config.emissive);
-    this.light.color.set(config.color);
 
     const s = config.size;
 
@@ -239,7 +234,7 @@ class EnemyInstance {
         this.bodyMat.emissiveIntensity = 2;
       } else {
         this.bodyMat.emissive.copy(this._origEmissive);
-        this.bodyMat.emissiveIntensity = 0.3;
+        this.bodyMat.emissiveIntensity = 0.6;
       }
     }
 
@@ -427,7 +422,7 @@ class EnemyInstance {
     this.group.visible = false;
     this.group.scale.setScalar(1);
     this.bodyMat.emissive.copy(this._origEmissive);
-    this.bodyMat.emissiveIntensity = 0.3;
+    this.bodyMat.emissiveIntensity = 0.6;
   }
 
   // Bounding sphere radius for collision

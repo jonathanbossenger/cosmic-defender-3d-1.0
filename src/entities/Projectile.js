@@ -69,11 +69,6 @@ class ProjectileInstance {
     this.mesh.visible = false;
     scene.add(this.mesh);
 
-    // Point light for glow
-    this.light = new THREE.PointLight(0x00ddff, 0.5, 5);
-    this.light.visible = false;
-    this.mesh.add(this.light);
-
     // Trail
     const trailGeo = new THREE.CylinderGeometry(0.02, 0.05, 0.5, 4);
     trailGeo.rotateX(Math.PI / 2);
@@ -96,11 +91,9 @@ class ProjectileInstance {
 
     this.mesh.material = isPlayer ? this.playerMat : this.enemyMat;
     this.trail.material = isPlayer ? this.trailPlayerMat : this.trailEnemyMat;
-    this.light.color.set(isPlayer ? 0x00ddff : 0xff4444);
 
     this.mesh.position.copy(origin);
     this.mesh.visible = true;
-    this.light.visible = true;
 
     // Orient trail
     this.mesh.lookAt(origin.x + direction.x, origin.y + direction.y, origin.z + direction.z);
@@ -124,6 +117,5 @@ class ProjectileInstance {
   deactivate() {
     this.active = false;
     this.mesh.visible = false;
-    this.light.visible = false;
   }
 }
