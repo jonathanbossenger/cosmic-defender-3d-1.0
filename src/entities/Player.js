@@ -6,6 +6,7 @@ const MOUSE_SENSITIVITY = 0.002;
 const EYE_HEIGHT = 1.7;
 const BOB_SPEED = 10;
 const BOB_AMOUNT = 0.03;
+const PLAYER_RADIUS = 0.4;
 
 export class Player {
   constructor(camera) {
@@ -25,6 +26,8 @@ export class Player {
 
     this.alive = true;
     this.bobPhase = 0;
+
+    this.coverObjects = [];
 
     // Stats
     this.damageDealt = 0;
@@ -85,6 +88,9 @@ export class Player {
     this.position.x += this.velocity.x * dt;
     this.position.z += this.velocity.z * dt;
 
+    // Resolve collisions with solid cover objects
+    this._resolveCoverCollisions();
+
     // Arena boundary (circular)
     const dist = Math.sqrt(this.position.x * this.position.x + this.position.z * this.position.z);
     if (dist > ARENA_RADIUS) {
@@ -120,6 +126,61 @@ export class Player {
     this.camera.position.copy(this.position);
     const euler = new THREE.Euler(this.pitch, this.yaw, 0, 'YXZ');
     this.camera.quaternion.setFromEuler(euler);
+  }
+
+  _resolveCoverCollisions() {
+    for (const obs of this.coverObjects) {
+      const dx = this.position.x - obs.x;
+      const dz = this.position.z - obs.z;
+
+      if (obs.type === 'cylinder') {
+        const dist2 = dx * dx + dz * dz;
+        const minDist = obs.radius + PLAYER_RADIUS;
+        if (dist2 < minDist * minDist && dist2 > 0) {
+          const dist = Math.sqrt(dist2);
+          const nx = dx / dist;
+          const nz = dz / dist;
+          this.position.x = obs.x + nx * minDist;
+          this.position.z = obs.z + nz * minDist;
+          const dot = this.velocity.x * nx + this.velocity.z * nz;
+          if (dot < 0) {
+            this.velocity.x -= nx * dot;
+            this.velocity.z -= nz * dot;
+          }
+        }
+      } else {
+        // OBB box: transform player offset into box local space
+        const lx = dx * obs.cosR - dz * obs.sinR;
+        const lz = dx * obs.sinR + dz * obs.cosR;
+        const ex = obs.hw + PLAYER_RADIUS;
+        const ez = obs.hd + PLAYER_RADIUS;
+        if (Math.abs(lx) < ex && Math.abs(lz) < ez) {
+          const ox = ex - Math.abs(lx);
+          const oz = ez - Math.abs(lz);
+          let plx = 0, plz = 0;
+          if (ox < oz) {
+            plx = Math.sign(lx) * ox;
+          } else {
+            plz = Math.sign(lz) * oz;
+          }
+          // Transform push back to world space
+          const pwx = plx * obs.cosR + plz * obs.sinR;
+          const pwz = -plx * obs.sinR + plz * obs.cosR;
+          this.position.x += pwx;
+          this.position.z += pwz;
+          const len = Math.sqrt(pwx * pwx + pwz * pwz);
+          if (len > 0) {
+            const nx = pwx / len;
+            const nz = pwz / len;
+            const dot = this.velocity.x * nx + this.velocity.z * nz;
+            if (dot < 0) {
+              this.velocity.x -= nx * dot;
+              this.velocity.z -= nz * dot;
+            }
+          }
+        }
+      }
+    }
   }
 
   takeDamage(amount) {

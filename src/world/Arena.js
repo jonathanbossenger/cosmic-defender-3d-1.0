@@ -121,17 +121,28 @@ export class Arena {
       emissiveIntensity: 0.5,
     });
 
+    this.coverObjects = [];
+
     coverPositions.forEach((pos, i) => {
       let geo;
       if (i % 3 === 0) {
         // Tall pillar
         geo = new THREE.CylinderGeometry(0.4, 0.5, 2, 6);
+        this.coverObjects.push({ type: 'cylinder', x: pos.x, z: pos.z, radius: 0.5, maxY: 2 });
       } else if (i % 3 === 1) {
-        // Low wall
+        // Low wall (2 wide, 0.4 deep)
         geo = new THREE.BoxGeometry(2, 1.2, 0.4);
+        this.coverObjects.push({
+          type: 'box', x: pos.x, z: pos.z, hw: 1.0, hd: 0.2,
+          cosR: Math.cos(pos.rotY), sinR: Math.sin(pos.rotY), maxY: 1.2,
+        });
       } else {
-        // Crate
+        // Crate (1×1)
         geo = new THREE.BoxGeometry(1, 1, 1);
+        this.coverObjects.push({
+          type: 'box', x: pos.x, z: pos.z, hw: 0.5, hd: 0.5,
+          cosR: Math.cos(pos.rotY), sinR: Math.sin(pos.rotY), maxY: 1.0,
+        });
       }
 
       const cover = new THREE.Mesh(geo, coverMat.clone());

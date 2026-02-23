@@ -71,6 +71,7 @@ export class Game {
     this.projectiles = new ProjectilePool(this.scene);
     this.enemies = new EnemyManager(this.scene);
     this.arena = new Arena(this.scene);
+    this.player.coverObjects = this.arena.coverObjects;
     this.waveManager = new WaveManager(this.enemies);
     this.combat = new Combat();
     this.particles = new Particles(this.scene);
@@ -268,6 +269,13 @@ export class Game {
         this.particles.spawnScorePopup(hit.position, hit.points);
       }
     }
+
+    // Enemy projectile vs obstacles (blocks shots; must run before vs-player check)
+    this.combat.checkObstacleProjectiles(
+      this.projectiles.getActive(),
+      this.arena.coverObjects,
+      this.particles,
+    );
 
     // Enemy projectile vs player
     const playerHit = this.combat.checkEnemyProjectiles(
