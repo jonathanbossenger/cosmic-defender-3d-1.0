@@ -7,6 +7,8 @@ const EYE_HEIGHT = 1.7;
 const BOB_SPEED = 10;
 const BOB_AMOUNT = 0.03;
 const PLAYER_RADIUS = 0.4;
+const GRAVITY = 20;
+const JUMP_VELOCITY = 7;
 
 export class Player {
   constructor(camera) {
@@ -27,6 +29,10 @@ export class Player {
     this.alive = true;
     this.bobPhase = 0;
 
+    this.verticalVelocity = 0;
+    this.isGrounded = true;
+    this.jumpsUsed = 0;
+
     this.coverObjects = [];
 
     // Stats
@@ -46,6 +52,9 @@ export class Player {
     this.damageDealt = 0;
     this.damageTaken = 0;
     this.bobPhase = 0;
+    this.verticalVelocity = 0;
+    this.isGrounded = true;
+    this.jumpsUsed = 0;
   }
 
   update(dt, input) {
@@ -107,13 +116,35 @@ export class Player {
       }
     }
 
-    // Camera bob
-    if (isMoving) {
-      this.bobPhase += BOB_SPEED * dt;
-      this.position.y = EYE_HEIGHT + Math.sin(this.bobPhase) * BOB_AMOUNT;
-    } else {
-      this.position.y += (EYE_HEIGHT - this.position.y) * Math.min(1, 5 * dt);
-      this.bobPhase = 0;
+    // Jump
+    if (input.consumeJump() && this.jumpsUsed < 2) {
+      this.verticalVelocity = JUMP_VELOCITY;
+      this.jumpsUsed++;
+      this.isGrounded = false;
+    }
+
+    // Vertical movement (gravity + jump)
+    if (!this.isGrounded) {
+      this.verticalVelocity -= GRAVITY * dt;
+      this.position.y += this.verticalVelocity * dt;
+      if (this.position.y <= EYE_HEIGHT) {
+        this.position.y = EYE_HEIGHT;
+        this.verticalVelocity = 0;
+        this.isGrounded = true;
+        this.jumpsUsed = 0;
+        this.bobPhase = 0;
+      }
+    }
+
+    // Camera bob (only when grounded)
+    if (this.isGrounded) {
+      if (isMoving) {
+        this.bobPhase += BOB_SPEED * dt;
+        this.position.y = EYE_HEIGHT + Math.sin(this.bobPhase) * BOB_AMOUNT;
+      } else {
+        this.position.y += (EYE_HEIGHT - this.position.y) * Math.min(1, 5 * dt);
+        this.bobPhase = 0;
+      }
     }
 
     // Shield regen
@@ -130,6 +161,9 @@ export class Player {
 
   _resolveCoverCollisions() {
     for (const obs of this.coverObjects) {
+      // Skip if the player's feet are above this obstacle (jumped over it)
+      if (obs.maxY !== undefined && this.position.y - EYE_HEIGHT >= obs.maxY) continue;
+
       const dx = this.position.x - obs.x;
       const dz = this.position.z - obs.z;
 
