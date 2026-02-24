@@ -15,6 +15,7 @@ export const ENEMY_TYPES = {
     health: 20,
     speed: 3,
     damage: 5,
+    collisionDamage: 8,
     points: 100,
     fireRate: 0.8,    // shots per second
     projectileSpeed: 15,
@@ -28,6 +29,7 @@ export const ENEMY_TYPES = {
     health: 40,
     speed: 4,
     damage: 8,
+    collisionDamage: 12,
     points: 250,
     fireRate: 1.2,
     projectileSpeed: 18,
@@ -117,6 +119,7 @@ class EnemyInstance {
     this.flashTimer = 0;
     this.deathTimer = 0;
     this.spawnTimer = 0;
+    this.collisionCooldown = 0;
 
     // Main mesh group
     this.group = new THREE.Group();
@@ -183,6 +186,7 @@ class EnemyInstance {
     this.strafeTimer = 2 + Math.random() * 2;
     this.flashTimer = 0;
     this.deathTimer = 0;
+    this.collisionCooldown = 0;
 
     // Configure appearance based on type
     this.bodyMat.color.set(config.color);
@@ -224,6 +228,11 @@ class EnemyInstance {
       case STATE.DYING:
         this._updateDying(dt);
         break;
+    }
+
+    // Collision cooldown
+    if (this.collisionCooldown > 0) {
+      this.collisionCooldown -= dt;
     }
 
     // Damage flash

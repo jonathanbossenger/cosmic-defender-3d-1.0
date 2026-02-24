@@ -100,6 +100,26 @@ export class Combat {
     }
   }
 
+  // Check active enemies colliding with the player (melee contact damage)
+  checkEnemyCollisions(enemies, player) {
+    if (!player.alive) return false;
+
+    let hit = false;
+    for (const enemy of enemies) {
+      if (!enemy.active || enemy.state === 4) continue; // STATE.DYING = 4
+      if (enemy.collisionCooldown > 0) continue;
+
+      const dist = enemy.position.distanceTo(player.position);
+      if (dist < enemy.radius + PLAYER_RADIUS) {
+        const damage = enemy.config?.collisionDamage ?? enemy.config?.damage ?? 10;
+        player.takeDamage(damage);
+        enemy.collisionCooldown = 1.0; // 1-second cooldown between hits
+        hit = true;
+      }
+    }
+    return hit;
+  }
+
   // Check enemy projectiles against player
   checkEnemyProjectiles(projectiles, player) {
     if (!player.alive) return false;

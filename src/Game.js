@@ -294,6 +294,22 @@ export class Game {
       }
     }
 
+    // Enemy body collision vs player
+    const collisionHit = this.combat.checkEnemyCollisions(
+      this.enemies.getActive(),
+      this.player,
+    );
+    if (collisionHit) {
+      this.audio.playDamage();
+      this.hud.showDamageVignette();
+      this.hud.addScreenShake(0.3);
+
+      if (!this.player.alive) {
+        this._gameOver();
+        return;
+      }
+    }
+
     // Combat system update (combos etc)
     this.combat.update(dt);
 
