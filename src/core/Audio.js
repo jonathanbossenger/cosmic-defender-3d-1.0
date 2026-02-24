@@ -254,12 +254,12 @@ export class Audio {
 
   // Simple synthwave bass loop
   _musicOscs = [];
-  startMusic() {
+  startMusic(wave = 1) {
     if (!this.ctx) return;
     this.stopMusic();
 
     const bassNotes = [65.41, 73.42, 82.41, 73.42]; // C2, D2, E2, D2
-    const bpm = 120;
+    const bpm = Math.min(120 + (wave - 1) * 8, 180);
     const beatLen = 60 / bpm;
 
     const playSequence = () => {
