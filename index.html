@@ -210,33 +210,57 @@
       bottom: 30px;
       left: 30px;
     }
+    #health-container .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
     #health-container .label {
-      font-size: 0.7rem;
-      color: #888;
-      margin-bottom: 3px;
+      font-size: 0.85rem;
+      color: #0f4;
+      text-shadow: 0 0 6px #0f4;
+      width: 46px;
+      letter-spacing: 0.05em;
+    }
+    #health-container .label.shield-label {
+      color: #0af;
+      text-shadow: 0 0 6px #0af;
+    }
+    #health-container .bar-value {
+      font-size: 0.85rem;
+      color: #ccc;
+      min-width: 52px;
+      text-align: right;
     }
     #health-track {
-      width: 200px;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      width: 180px;
+      height: 16px;
+      background: rgba(0, 255, 68, 0.1);
+      border: 1px solid rgba(0, 255, 68, 0.4);
+      border-radius: 2px;
+      overflow: hidden;
     }
     #health-fill {
       height: 100%;
       width: 100%;
-      background: #0f4;
-      transition: width 0.2s, background 0.2s;
+      background: linear-gradient(90deg, #0a3, #0f4);
+      box-shadow: 0 0 8px rgba(0, 255, 68, 0.6);
+      transition: width 0.2s, background 0.2s, box-shadow 0.2s;
     }
     #shield-track {
-      width: 200px;
-      height: 5px;
-      background: rgba(255, 255, 255, 0.05);
-      margin-top: 2px;
+      width: 180px;
+      height: 14px;
+      background: rgba(0, 170, 255, 0.1);
+      border: 1px solid rgba(0, 170, 255, 0.4);
+      border-radius: 2px;
+      overflow: hidden;
     }
     #shield-fill {
       height: 100%;
       width: 100%;
-      background: #0af;
+      background: linear-gradient(90deg, #07f, #0af);
+      box-shadow: 0 0 8px rgba(0, 170, 255, 0.6);
       transition: width 0.2s;
     }
 
@@ -432,9 +456,16 @@
     </div>
 
     <div id="health-container">
-      <div class="label">HEALTH</div>
-      <div id="health-track"><div id="health-fill"></div></div>
-      <div id="shield-track"><div id="shield-fill"></div></div>
+      <div class="bar-row">
+        <div class="label">HP</div>
+        <div id="health-track"><div id="health-fill"></div></div>
+        <div class="bar-value" id="health-value">100/100</div>
+      </div>
+      <div class="bar-row">
+        <div class="label shield-label">SH</div>
+        <div id="shield-track"><div id="shield-fill"></div></div>
+        <div class="bar-value" id="shield-value">100/100</div>
+      </div>
     </div>
 
     <div id="ammo-display">

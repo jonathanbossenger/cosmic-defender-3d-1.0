@@ -3,7 +3,9 @@ export class HUD {
     this.el = {
       hud: document.getElementById('hud'),
       healthFill: document.getElementById('health-fill'),
+      healthValue: document.getElementById('health-value'),
       shieldFill: document.getElementById('shield-fill'),
+      shieldValue: document.getElementById('shield-value'),
       ammoCount: document.getElementById('ammo-count'),
       scoreVal: document.getElementById('score-val'),
       waveVal: document.getElementById('wave-val'),
@@ -37,17 +39,22 @@ export class HUD {
     // Health
     const healthPct = (state.health / state.maxHealth) * 100;
     this.el.healthFill.style.width = healthPct + '%';
+    this.el.healthValue.textContent = `${Math.round(state.health)}/${state.maxHealth}`;
     if (healthPct > 60) {
-      this.el.healthFill.style.background = '#0f4';
+      this.el.healthFill.style.background = 'linear-gradient(90deg, #0a3, #0f4)';
+      this.el.healthFill.style.boxShadow = '0 0 8px rgba(0, 255, 68, 0.6)';
     } else if (healthPct > 30) {
-      this.el.healthFill.style.background = '#fa0';
+      this.el.healthFill.style.background = 'linear-gradient(90deg, #a60, #fa0)';
+      this.el.healthFill.style.boxShadow = '0 0 8px rgba(255, 170, 0, 0.6)';
     } else {
-      this.el.healthFill.style.background = '#f44';
+      this.el.healthFill.style.background = 'linear-gradient(90deg, #a22, #f44)';
+      this.el.healthFill.style.boxShadow = '0 0 8px rgba(255, 68, 68, 0.8)';
     }
 
     // Shield
     const shieldPct = (state.shield / state.maxShield) * 100;
     this.el.shieldFill.style.width = shieldPct + '%';
+    this.el.shieldValue.textContent = `${Math.round(state.shield)}/${state.maxShield}`;
 
     // Ammo
     const ammoEl = this.el.ammoCount;
