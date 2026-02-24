@@ -6,6 +6,7 @@ A 3D first-person shooter game built with Three.js, Cannon.js for physics, and V
 
 - https://github.com/jonathanbossenger/cosmic-defender-3d-0.1/
 - https://github.com/jonathanbossenger/cosmic-defender-3d-0.2/
+- https://jonathanbossenger.com/a-year-of-progress-ai-agentic-coding-and-the-cosmic-defender-experiment/
 
 ## Features
 
