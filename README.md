@@ -1,51 +1,44 @@
-# 3D Shooter Game
+# Cosmic Defender 3D
 
-A 3D first-person shooter game built with Three.js, Cannon.js for physics, and Vite for building.
+A first-person wave-based shooter built with Three.js and Vite.
 
 ## History
 
 - https://github.com/jonathanbossenger/cosmic-defender-3d-0.1/
 - https://github.com/jonathanbossenger/cosmic-defender-3d-0.2/
+- https://jonathanbossenger.com/a-year-of-progress-ai-agentic-coding-and-the-cosmic-defender-experiment/
 
 ## Features
 
 - First-person shooter controls
-- Physics-based gameplay using Cannon.js
-- Realistic 3D environment with lighting and shadows
-- Weapon system with shooting mechanics
-- Performance monitoring with Stats.js
-- Debug UI with Tweakpane
+- Wave-based enemy spawning with increasing difficulty
+- Two enemy types: drones and soldiers
+- Weapon system with shooting mechanics and reload
+- Combo multiplier system for consecutive kills
+- Procedural audio via Web Audio API (no audio files)
+- DOM-based HUD and menus
+- High score persistence via localStorage
 
 ## Technologies Used
 
 - [Three.js](https://threejs.org/) - 3D graphics library
-- [Cannon.js](https://schteppe.github.io/cannon.js/) - Physics engine
 - [Vite](https://vitejs.dev/) - Frontend build tool
-- [GSAP](https://greensock.com/gsap/) - Animation library
-- [Tweakpane](https://cocopon.github.io/tweakpane/) - Debug UI
-- [Stats.js](https://github.com/mrdoob/stats.js/) - Performance monitoring
 
 ## Project Structure
 
 ```
-3d-shooter-game/
-├── index.html              # Main HTML file
+cosmic-defender-3d/
+├── index.html              # Main HTML file with inline UI/HUD
 ├── package.json            # Project dependencies
-├── src/                    # Source code
-│   ├── js/                 # JavaScript files
-│   │   ├── components/     # Game components
-│   │   ├── controls/       # Player controls
-│   │   ├── enemies/        # Enemy logic
-│   │   ├── physics/        # Physics system
-│   │   ├── scenes/         # Game scenes
-│   │   ├── utils/          # Utility functions
-│   │   ├── weapons/        # Weapon system
-│   │   └── main.js         # Main entry point
-│   └── assets/             # Game assets
-│       ├── models/         # 3D models
-│       ├── textures/       # Textures
-│       └── sounds/         # Sound effects
-└── public/                 # Static files
+├── vite.config.js          # Vite configuration
+└── src/                    # Source code
+    ├── main.js             # Entry point
+    ├── Game.js             # Central game orchestrator and loop
+    ├── core/               # Input handling and audio
+    ├── entities/           # Player, enemies, projectiles, weapon
+    ├── systems/            # Combat, particles, wave management
+    ├── ui/                 # HUD and screen management
+    └── world/              # Arena geometry
 ```
 
 ## Getting Started
@@ -53,28 +46,24 @@ A 3D first-person shooter game built with Three.js, Cannon.js for physics, and V
 ### Prerequisites
 
 - Node.js (v14 or higher)
-- npm or yarn
+- npm
 
 ### Installation
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/3d-shooter-game.git
-   cd 3d-shooter-game
+   git clone https://github.com/jonathanbossenger/cosmic-defender-3d.git
+   cd cosmic-defender-3d
    ```
 
 2. Install dependencies:
    ```bash
    npm install
-   # or
-   yarn install
    ```
 
 3. Start the development server:
    ```bash
    npm run dev
-   # or
-   yarn dev
    ```
 
 4. Open your browser and navigate to `http://localhost:5173`
@@ -85,7 +74,7 @@ A 3D first-person shooter game built with Three.js, Cannon.js for physics, and V
 - **Mouse** - Look around
 - **Left Click** - Shoot
 - **R** - Reload
-- **Space** - Jump
+- **Escape** - Pause
 
 ## Building for Production
 
@@ -93,20 +82,9 @@ To build the game for production:
 
 ```bash
 npm run build
-# or
-yarn build
 ```
 
 The built files will be in the `dist` directory.
-
-## Future Improvements
-
-- Add more weapon types
-- Implement enemy AI
-- Add game levels
-- Implement scoring system
-- Add sound effects and music
-- Create a main menu
 
 ## License
 
@@ -115,4 +93,3 @@ This project is licensed under the ISC License.
 ## Acknowledgements
 
 - [Three.js examples](https://threejs.org/examples/) for inspiration
-- [Cannon.js documentation](https://schteppe.github.io/cannon.js/docs/) for physics implementation 
