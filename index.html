@@ -143,6 +143,41 @@
       50% { opacity: 0.5; }
     }
 
+    /* Share buttons */
+    .share-label {
+      color: #889;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+    .share-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .share-btn {
+      padding: 5px 9px;
+      background: transparent;
+      border: 1px solid #446;
+      color: #889;
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      transition: all 0.2s;
+    }
+    .share-btn:hover {
+      border-color: #0af;
+      color: #0af;
+      box-shadow: 0 0 10px rgba(0, 170, 255, 0.2);
+    }
+    .share-btn.copied {
+      border-color: #0f8;
+      color: #0f8;
+    }
+
     /* Wave announcement */
     #wave-announce {
       position: fixed;
@@ -411,6 +446,18 @@
     <p class="new-high-score hidden" id="new-high-score">NEW HIGH SCORE!</p>
     <p class="final-score" id="final-score">0</p>
     <div class="stats" id="final-stats"></div>
+    <div id="share-buttons">
+      <p class="share-label">SHARE YOUR SCORE</p>
+      <div class="share-row">
+        <button class="share-btn" id="share-twitter">Twitter</button>
+        <button class="share-btn" id="share-bluesky">Bluesky</button>
+        <button class="share-btn" id="share-mastodon">Mastodon</button>
+        <button class="share-btn" id="share-linkedin">LinkedIn</button>
+        <button class="share-btn" id="share-facebook">Facebook</button>
+        <button class="share-btn" id="share-instagram">Instagram</button>
+        <button class="share-btn" id="share-tiktok">TikTok</button>
+      </div>
+    </div>
     <button class="menu-btn" id="btn-restart">PLAY AGAIN</button>
     <button class="menu-btn" id="btn-menu">MAIN MENU</button>
   </div>

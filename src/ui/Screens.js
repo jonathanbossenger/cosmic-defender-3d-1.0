@@ -23,8 +23,20 @@ export class Screens {
     this.btnRestart = document.getElementById('btn-restart');
     this.btnMenu = document.getElementById('btn-menu');
 
+    // Share buttons
+    this.shareButtons = {
+      twitter: document.getElementById('share-twitter'),
+      bluesky: document.getElementById('share-bluesky'),
+      mastodon: document.getElementById('share-mastodon'),
+      linkedin: document.getElementById('share-linkedin'),
+      facebook: document.getElementById('share-facebook'),
+      instagram: document.getElementById('share-instagram'),
+      tiktok: document.getElementById('share-tiktok'),
+    };
+
     this.highScore = parseInt(localStorage.getItem(HIGH_SCORE_KEY)) || 0;
     this._showingControls = false;
+    this._shareListeners = {};
   }
 
   // Callbacks
@@ -69,6 +81,77 @@ export class Screens {
     } else {
       this.el.menuHighScore.textContent = '';
     }
+  }
+
+  _buildShareText(stats) {
+    const score = (stats.score || 0).toLocaleString();
+    return `🚀 I scored ${score} in Cosmic Defender 3D! Wave ${stats.wave} reached, ${stats.kills} enemies destroyed. Can you beat me? #CosmicDefender`;
+  }
+
+  _openShareWindow(url) {
+    window.open(url, '_blank', 'noopener,noreferrer,width=600,height=400');
+  }
+
+  _showCopyFeedback(btn, success) {
+    const COPY_FEEDBACK_DURATION = 2000;
+    const original = btn.textContent;
+    btn.textContent = success ? 'Copied!' : 'Failed';
+    btn.classList.toggle('copied', success);
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.classList.remove('copied');
+    }, COPY_FEEDBACK_DURATION);
+  }
+
+  _copyToClipboard(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+      this._showCopyFeedback(btn, true);
+    }).catch(() => {
+      // Fallback for browsers without clipboard API
+      let success = false;
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        success = document.execCommand('copy');
+        document.body.removeChild(ta);
+      } catch (_) {
+        // execCommand not available
+      }
+      this._showCopyFeedback(btn, success);
+    });
+  }
+
+  _setupShareButtons(stats) {
+    const text = this._buildShareText(stats);
+    const pageUrl = encodeURIComponent(window.location.href);
+    const encodedText = encodeURIComponent(text);
+
+    const handlers = {
+      twitter: () => this._openShareWindow(`https://twitter.com/intent/tweet?text=${encodedText}`),
+      bluesky: () => this._openShareWindow(`https://bsky.app/intent/compose?text=${encodedText}`),
+      mastodon: () => this._openShareWindow(`https://mastodon.social/share?text=${encodedText}`),
+      linkedin: () => this._openShareWindow(`https://www.linkedin.com/sharing/share-offsite/?url=${pageUrl}&summary=${encodedText}`),
+      facebook: () => this._openShareWindow(`https://www.facebook.com/sharer/sharer.php?u=${pageUrl}&quote=${encodedText}`),
+      instagram: () => this._copyToClipboard(text, this.shareButtons.instagram),
+      tiktok: () => this._copyToClipboard(text, this.shareButtons.tiktok),
+    };
+
+    // Remove old listeners before attaching new ones
+    for (const [key, btn] of Object.entries(this.shareButtons)) {
+      if (this._shareListeners[key]) {
+        btn.removeEventListener('click', this._shareListeners[key]);
+      }
+      this._shareListeners[key] = handlers[key];
+      btn.addEventListener('click', handlers[key]);
+    }
+
+    // Update Instagram/TikTok labels to hint clipboard behaviour
+    this.shareButtons.instagram.title = 'Copy score text to clipboard';
+    this.shareButtons.tiktok.title = 'Copy score text to clipboard';
   }
 
   setLoadingProgress(pct) {
@@ -117,6 +200,8 @@ export class Screens {
     } else {
       this.el.newHighScore.classList.add('hidden');
     }
+
+    this._setupShareButtons(stats);
   }
 
   _hideAll() {
