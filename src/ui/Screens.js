@@ -86,7 +86,7 @@ export class Screens {
 
   _buildShareText(stats) {
     const score = (stats.score || 0).toLocaleString();
-    return `🚀 I scored ${score} in Cosmic Defender 3D! Wave ${stats.wave} reached, ${stats.kills} enemies destroyed. Can you beat me? ${GAME_URL} #CosmicDefender`;
+    return `🚀 I scored ${score} in Cosmic Defender 3D! Wave ${stats.wave} reached, ${stats.kills} enemies destroyed. Can you beat me? ${GAME_URL} #CosmicDefender3D`;
   }
 
   _openShareWindow(url) {
