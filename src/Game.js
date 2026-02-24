@@ -140,7 +140,7 @@ export class Game {
     this.input.requestLock(this.renderer.domElement);
     this.state = STATES.PLAYING;
 
-    this.audio.startMusic();
+    this.audio.startMusic(1);
 
     // Start first wave
     this.clock.getDelta(); // reset delta
@@ -159,7 +159,7 @@ export class Game {
     this.screens.hidePause();
     this.input.requestLock(this.renderer.domElement);
     this.state = STATES.PLAYING;
-    this.audio.startMusic();
+    this.audio.startMusic(this.waveManager.wave);
     this.clock.getDelta(); // reset delta to avoid jump
   }
 
@@ -196,6 +196,8 @@ export class Game {
     this.hud.showWaveAnnouncement(wave, this.waveManager.getWaveSubtext());
     if (wave > 1) {
       this.audio.playWaveComplete();
+      this.audio.stopMusic();
+      this.audio.startMusic(wave);
     }
   }
 
