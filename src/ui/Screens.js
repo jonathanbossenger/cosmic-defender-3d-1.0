@@ -1,4 +1,5 @@
 const HIGH_SCORE_KEY = 'cosmic-defender-highscore';
+const GAME_URL = 'https://jonathanbossenger.github.io/cosmic-defender-3d/';
 
 export class Screens {
   constructor() {
@@ -85,7 +86,7 @@ export class Screens {
 
   _buildShareText(stats) {
     const score = (stats.score || 0).toLocaleString();
-    return `🚀 I scored ${score} in Cosmic Defender 3D! Wave ${stats.wave} reached, ${stats.kills} enemies destroyed. Can you beat me? #CosmicDefender`;
+    return `🚀 I scored ${score} in Cosmic Defender 3D! Wave ${stats.wave} reached, ${stats.kills} enemies destroyed. Can you beat me? ${GAME_URL} #CosmicDefender`;
   }
 
   _openShareWindow(url) {
@@ -127,7 +128,7 @@ export class Screens {
 
   _setupShareButtons(stats) {
     const text = this._buildShareText(stats);
-    const pageUrl = encodeURIComponent(window.location.href);
+    const pageUrl = encodeURIComponent(GAME_URL);
     const encodedText = encodeURIComponent(text);
 
     const handlers = {
