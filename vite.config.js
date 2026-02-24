@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig({
-  base: '/cosmic-defender-3d-1.0/',
+  base: '/cosmic-defender-3d/',
   server: {
     open: true,
   },
