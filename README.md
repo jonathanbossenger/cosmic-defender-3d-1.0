@@ -2,9 +2,10 @@
 
 A 3D first-person shooter game built with Three.js, Cannon.js for physics, and Vite for building.
 
-## Warning
+## History
 
-This project is very much a work in progress, so don't expect anything
+- https://github.com/jonathanbossenger/cosmic-defender-3d-0.1/
+- https://github.com/jonathanbossenger/cosmic-defender-3d-0.2/
 
 ## Features
 
