@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-const POOL_SIZE = 80;
+const POOL_SIZE = 200;
 const MAX_DISTANCE = 100;
 
 export class ProjectilePool {
