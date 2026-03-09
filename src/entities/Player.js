@@ -66,14 +66,12 @@ export class Player {
     this.pitch -= mouse.dy * MOUSE_SENSITIVITY;
     this.pitch = Math.max(-Math.PI / 2 + 0.01, Math.min(Math.PI / 2 - 0.01, this.pitch));
 
-    // Movement
-    const moveDir = new THREE.Vector3();
-    if (input.forward) moveDir.z -= 1;
-    if (input.backward) moveDir.z += 1;
-    if (input.left) moveDir.x -= 1;
-    if (input.right) moveDir.x += 1;
-
-    const isMoving = moveDir.lengthSq() > 0;
+    // Movement – use analog axes so gamepad sticks give proportional speed
+    const moveDir = new THREE.Vector3(input.moveAxisX, 0, input.moveAxisZ);
+    // Clamp diagonal keyboard input to unit length, while preserving
+    // partial deflection from analog sticks (e.g. half-push = half speed)
+    const analogMagnitude = Math.min(1, moveDir.length());
+    const isMoving = analogMagnitude > 0;
     if (isMoving) {
       moveDir.normalize();
       // Rotate by yaw
@@ -85,8 +83,8 @@ export class Player {
       moveDir.z = rz;
     }
 
-    const speed = input.shift ? MOVE_SPEED * 1.4 : MOVE_SPEED;
-    const targetVel = moveDir.multiplyScalar(speed);
+    const baseSpeed = input.shift ? MOVE_SPEED * 1.4 : MOVE_SPEED;
+    const targetVel = moveDir.multiplyScalar(baseSpeed * analogMagnitude);
 
     // Smooth acceleration
     const accel = 15;
