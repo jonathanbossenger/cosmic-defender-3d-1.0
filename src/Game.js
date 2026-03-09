@@ -92,9 +92,10 @@ export class Game {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // Pointer lock change handling
+    // Pointer lock change handling – only pause when using keyboard+mouse.
+    // Gamepad players don't need pointer lock, so losing it doesn't pause.
     document.addEventListener('pointerlockchange', () => {
-      if (!document.pointerLockElement && this.state === STATES.PLAYING) {
+      if (!document.pointerLockElement && this.state === STATES.PLAYING && !this.input.gamepadConnected) {
         this._pauseGame();
       }
     });
@@ -215,6 +216,9 @@ export class Game {
   }
 
   _updateGameplay(dt) {
+    // Poll gamepad state before processing any input this frame
+    this.input.pollGamepad(dt);
+
     // Input handling
     if (this.input.consumeEsc()) {
       this._pauseGame();
@@ -232,7 +236,7 @@ export class Game {
     this.weapon.update(dt);
 
     // Shooting
-    if (this.input.mouseDown && this.weapon.canFire()) {
+    if (this.input.isFiring && this.weapon.canFire()) {
       const shotInfo = this.weapon.fire();
       if (shotInfo) {
         this.projectiles.spawn(
